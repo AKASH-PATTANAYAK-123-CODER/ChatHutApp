@@ -1,0 +1,22 @@
+@keyframes spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Place items at the bottom */
+    height: 89vh; /* You can adjust the height as needed */
+  }
+  .loading-spinner {
+    width: 65px;
+    height: 65px;
+    border: 10px solid #000000; /* Light grey */
+    border-top: 10px solid #ffffff; /* Black */
+    border-radius: 50%;
+    animation: spinner 1.5s linear infinite;
+  }
