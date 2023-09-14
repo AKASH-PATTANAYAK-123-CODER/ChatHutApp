@@ -5,7 +5,7 @@ import user_img from './user_img.jpg'
 import man from './man.jpg'
 import profile_user from './profile_user.jpg'
 import Log_out from "./Log_out.png"
-import {  useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { io } from "socket.io-client";
@@ -25,23 +25,23 @@ const Dashboard = () => {
 	const [users, setUsers] = useState([])
 	const [onlineUser, setonlinetUser] = useState([])
 	const [socket, setSocket] = useState(null)
-	const [Length, setLength] = useState(0);
-	
+
+
 	const messageRef = useRef(null)
 
 	const { name, user_id } = useParams()
 
 	useEffect(() => {
-		const socket = io("http://localhost:8080")
+		const socket = io("https://chathutmessageappbackend.onrender.com")
 		setSocket(socket)
 		return () => {
 			socket.disconnect();
 		};
 	}, []);
 
-	
 
-	
+
+
 
 
 	useEffect(() => {
@@ -49,26 +49,24 @@ const Dashboard = () => {
 		socket?.emit('addUser', user_id);
 
 		socket?.on('getUsers', users => {
-			fetchUsers()
-			setonlinetUser(users)
+			fetchUsers();
+			setonlinetUser(users);
 		})
 
 		socket?.on('getMessage', data => {
-			fetchConversations()
-				setMessages(prev => ({
-					...prev,
-					mssg: prev.mssg ? [...prev.mssg, { user: data.user, message: data.message }] : []
+			fetchConversations();
+			setMessages(prev => ({
+				...prev,
+				mssg: (prev.mssg && prev.mssg.length > 0) || (prev.mssg && prev.mssg.length === 0 && data.senderId === user_id) || (prev.mssg && prev.mssg.length === 0 && prev.receiver.receiverId === data.senderId) ? [...prev.mssg, { user: data.user, message: data.message }] : []
 
-				}));
-			});
-			
-	
+			}));
+		});
 
 		socket?.on('alreadyExist', () => {
 			toast.success("Already Same Account Open in Another Tab", {
 				position: "top-center"
 			})
-			setTimeout(movePage, 3000)
+			setTimeout(movePage, 1500)
 		});
 
 
@@ -84,7 +82,7 @@ const Dashboard = () => {
 
 	const fetchConversations = async () => {
 
-		await axios.get(`http://localhost:8000/api/user/getConversation/${user_id}`).then(response => {
+		await axios.get(`https://chathutmessageappbackend.onrender.com/api/user/getConversation/${user_id}`).then(response => {
 			setConversations(response.data)
 		})
 			.catch(error => {
@@ -92,7 +90,7 @@ const Dashboard = () => {
 			})
 	}
 	const fetchUsers = async () => {
-		await axios.get(`http://localhost:8000/api/user/allpeople/${user_id}`).then(response => {
+		await axios.get(`https://chathutmessageappbackend.onrender.com/api/user/allpeople/${user_id}`).then(response => {
 			setUsers(response.data)
 		})
 			.catch(error => {
@@ -110,9 +108,8 @@ const Dashboard = () => {
 
 
 	const fetchMessages = async (conversationId, receiver) => {
-		await axios.get(`http://localhost:8000/api/user/getmessege/${conversationId}?senderId=${user_id}&receiverId=${receiver?.receiverId}`).then(response => {
+		await axios.get(`https://chathutmessageappbackend.onrender.com/api/user/getmessege/${conversationId}?senderId=${user_id}&receiverId=${receiver?.receiverId}`).then(response => {
 			const messagesData = response.data;
-			setLength(messagesData.length)
 			setMessages({ mssg: messagesData, receiver, conversationId });
 
 		})
@@ -136,7 +133,7 @@ const Dashboard = () => {
 		const receiverId = messages?.receiver?.receiverId;
 		const Sendmssg = { conversationId, senderId, messege, receiverId }
 		setMessage('')
-		await axios.post(`http://localhost:8000/api/user/postmssg`, Sendmssg).then(response => {
+		await axios.post(`https://chathutmessageappbackend.onrender.com/api/user/postmssg`, Sendmssg).then(response => {
 			console.log("Message posted")
 		})
 			.catch(error => {
@@ -150,10 +147,10 @@ const Dashboard = () => {
 	}
 
 	const LogOut = async () => {
-		axios.get("http://localhost:8000/api/user/logout").then(response => {
-			setTimeout(movePage, 2000)
-			toast.success("LogOut Successfully",{
-				position:"top-center"
+		axios.get("https://chathutmessageappbackend.onrender.com/api/user/logout").then(response => {
+			setTimeout(movePage, 1500)
+			toast.success("Logout Successful", {
+				position: "top-center"
 			})
 		})
 			.catch(error => {
@@ -165,7 +162,7 @@ const Dashboard = () => {
 			<div className='w-screen flex'>
 				<div className='2x1:w-[25%] x1:w[30%] lg:w-[37%] md:w-[40%] sm:w[35%] h-screen bg-secondary overflow-scroll'>
 					<div className='flex items-center my-10 mx-5'>
-						<div><img class="lg:h-full lg:w-17 md:h-full md:w-20 sm:h-full sm:w-16 rounded-full border border-light " src={profile_user}/></div>
+						<div><img class="lg:h-full lg:w-17 md:h-full md:w-20 sm:h-full sm:w-16 rounded-full border border-light " src={profile_user} /></div>
 						<div className='ml-6'>
 							<h3 className='text-2xl'>{name}</h3>
 							<p className='text-lg font-dark'>My Account</p>
@@ -182,7 +179,7 @@ const Dashboard = () => {
 										return (
 											<div className='flex items-center py-8 border-b border-b-grey-457'>
 												<div className='cursor-pointer flex items-center' onClick={() => fetchMessages(conversationId, user)}>
-												<div><img class="lg:h-full lg:w-14 md:h-full md:w-11 sm:h-full sm:w-14 rounded-full border border-light " src={man}/></div>
+													<div><img class="lg:h-full lg:w-14 md:h-full md:w-11 sm:h-full sm:w-14 rounded-full border border-light " src={man} /></div>
 													<div className='ml-6'>
 														<h3 className='text-lg font-semibold'>{user?.fullName}</h3>
 														<p className='text-sm font-dark text-black-1000'>
@@ -203,7 +200,7 @@ const Dashboard = () => {
 					{
 						messages?.receiver?.fullName &&
 						<div className='lg:w-[75%] md:w-[97%] sm:w[40%] bg-bar lg:h-[75px] md:h-[95px] sm:h[60%] my-14 rounded-full flex items-center px-14 py-2'>
-						<div><img class="lg:h-full lg:w-14 md:h-full md:w-20 sm:h-full sm:w-40 rounded-full border border-light " src={man}/></div>
+							<div><img class="lg:h-full lg:w-14 md:h-full md:w-20 sm:h-full sm:w-40 rounded-full border border-light " src={man} /></div>
 							{
 
 								<div className='ml-6 mr-auto'>
@@ -236,7 +233,9 @@ const Dashboard = () => {
 										if (id === user_id) {
 											return (
 												<>
-													<div className={`max-w-[40%] rounded-b-xl p-4 mb-6 bg-text text-black rounded-tl-xl ml-auto`}>{message}</div>
+
+													<div className={`lg:max-w-[230px] md:max-w-[100px] rounded-b-xl p-4 mb-6 bg-text  break-words text-black rounded-tl-xl ml-auto`}>{message}</div>
+
 													<div ref={messageRef}></div>
 												</>
 
@@ -245,19 +244,15 @@ const Dashboard = () => {
 											if (messages?.receiver?.receiverId === id) {
 												return (
 													<>
-														<div className={`max-w-[40%] rounded-b-xl p-4 mb-6 bg-rcvtext rounded-tr-xl`}>{message}</div>
+
+														<div className={`lg:max-w-[230px] md:max-w-[100px] rounded-b-xl p-4 mb-6 bg-rcvtext break-words rounded-tr-xl `}>{message}</div>
+
 														<div ref={messageRef}></div>
+
 													</>
 
 												);
 											}
-											else {
-												if (Length === 0) {
-													setMessages({ mssg: [], receiver: messages?.receiver })
-
-												}
-											}
-
 
 									})
 									: <div className='text-center text-lg font-semibold mt-24'>No Messages or No Conversation Selected</div>
@@ -299,9 +294,9 @@ const Dashboard = () => {
 									return (
 										<div className='flex items-center py-8 border-b border-b-gray-300'>
 											<div className='cursor-pointer flex items-center' onClick={() => fetchMessages('new', user)}>
-											<div><img class="lg:h-full lg:w-14 md:h-full md:w-12 sm:h-full sm:w-16 rounded-full border border-light " src={user_img}/></div>
+												<div><img class="lg:h-full lg:w-14 md:h-full md:w-12 sm:h-full sm:w-16 rounded-full border border-light " src={user_img} /></div>
 												<div className='ml-6'>
-													<h3 className='text-lg font-semibold'>{user.fullName}</h3>
+													<h3 className='text-lg font-semibold'>{user?.fullName}</h3>
 													<p className='text-sm font-dark text-black-1000'>
 														{onlineUser.find((usr) => usr.userId === user.receiverId) ? 'Online' : 'Offline'}
 													</p>
@@ -317,7 +312,8 @@ const Dashboard = () => {
 			</div>
 
 			<ToastContainer />
-			
+
+
 		</>
 
 	)

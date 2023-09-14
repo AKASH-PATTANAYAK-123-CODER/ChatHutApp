@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css"
 import axios from "axios"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"
 import { useNavigate } from "react-router-dom";
 import Motion from "./spinner";
+import Typed from "react-typed";
 
 
 
@@ -42,11 +43,15 @@ const Test = () => {
     const [password, setPassword] = useState("");
     const [isChecked, setChecked] = useState(false)
     const [loading, setLoading] = useState(false);
-   
-      
-      
-   
 
+
+
+useEffect(()=>{
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function () {
+        window.history.go(1);
+    };
+},[])
 
 
 
@@ -55,7 +60,7 @@ const Test = () => {
         const userData = { name, email, password };
         if (isChecked) {
             setLoading(true);
-            axios.post("http://localhost:8000/api/user/register", userData).then(response => {
+            axios.post("https://chathutmessageappbackend.onrender.com/api/user/register", userData).then(response => {
                 setLoading(false);
                 login()
                 toast.success(response.data, {
@@ -83,10 +88,9 @@ const Test = () => {
     const submit = (e) => {
         e.preventDefault();
         setLoading(true)
-        axios.post("http://localhost:8000/api/user/login", { email, password }).then(response => {
+        axios.post("https://chathutmessageappbackend.onrender.com/api/user/login", { email, password }).then(response => {
             setLoading(false)
             navigate(`/dashboard/${response.data.name}/${response.data._id}`)
-
 
         })
             .catch(error => {
@@ -101,7 +105,7 @@ const Test = () => {
 
     const hand = (e) => {
         e.preventDefault();
-        axios.get("http://localhost:8000/api/user/authenticate").then(response => {
+        axios.get("https://chathutmessageappbackend.onrender.com/api/user/authenticate").then(response => {
             navigate(`/dashboard/${response.data.name}/${response.data._id}`)
 
         })
@@ -130,9 +134,19 @@ const Test = () => {
             <div className="full-page">
                 <div className="navbar">
                     <div>
-                        <a><em>ChatHut</em></a>
-                      
+                        <h2><em>ChatHut</em></h2>
+                        <Typed
+                          strings={[
+                              "Welcome to ChatHut",
+                              "Stay Tunned with us",
+                              "Stay Connected with us",
+                          ]}
+                       typeSpeed={250}
+                       backSpeed={150}
+                       loop
+                      />
                     </div>
+
                     <nav>
                         <ul id='MenuItems'>
                             <li><button className='loginbtn' onClick={register}>Register</button></li>
@@ -168,19 +182,21 @@ const Test = () => {
 
                     </div>
                 </div>
+
             </div>
+           
 
 
 
 
-           
-           
-            <ToastContainer/>
-           
-           
+
+            <ToastContainer />
+
+
             {
                 loading ? <Motion /> : console.log("")
             }
+            
 
         </>
     )

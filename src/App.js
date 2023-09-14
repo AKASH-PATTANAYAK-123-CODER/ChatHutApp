@@ -1,21 +1,28 @@
 import { Route, Routes } from "react-router-dom"
-//import Land from "./component/Landpage"
 import Test from "./components/Register_Login"
 import Dashboard from "./components/Dashboard"
-//import axios from "axios";
-//import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useState } from "react";
+
 
 
 
 function App() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
 
   return (
     <div>
-      <Routes>
-        <Route path="/" element={<Test />} />
-        <Route path="/dashboard/:name/:user_id" element={<Dashboard />} />
-
-      </Routes>
+      {isMobile ? (
+        <h1>This is Not Compatible in Mobile Please open in Desktop or Desktop site</h1>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Test />} />
+          <Route path="/dashboard/:name/:user_id" element={<Dashboard />} />
+        </Routes>
+      )}
     </div>
   );
 }

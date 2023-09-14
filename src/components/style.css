@@ -13,6 +13,9 @@
 	background-size: cover;
 	position: absolute;
 }
+
+
+
 .navbar
 {
     display: flex;
@@ -62,7 +65,7 @@ nav ul li a:hover
 {
     color: aqua;
 }
-a
+h2
 {
     text-decoration: none;
     color: rgb(197, 105, 136);
@@ -187,9 +190,12 @@ span
 	top:12.5%;
 	
 	background-color: aquamarine;
-	color:brown;
+	color:rgb(202, 40, 40);
 	border: none;
 	border-radius: 10px;
 
+}
+.para_text{
+    color:rgb(182, 60, 16)
 }
 
